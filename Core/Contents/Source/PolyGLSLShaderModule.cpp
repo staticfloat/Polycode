@@ -117,11 +117,11 @@ Shader *GLSLShaderModule::createShader(ResourcePool *resourcePool, String name, 
 	GLSLShader *retShader = NULL;
 
 	GLSLProgram *vp = NULL;
-    GLSLProgram *gp = NULL;
+	GLSLProgram *gp = NULL;
 	GLSLProgram *fp = NULL;
 
 	vp = (GLSLProgram*)resourcePool->getResourceByPath(vpName);
-    gp = (GLSLProgram*)resourcePool->getResourceByPath(gpName);
+	gp = (GLSLProgram*)resourcePool->getResourceByPath(gpName);
 	fp = (GLSLProgram*)resourcePool->getResourceByPath(fpName);
 		
 	if(vp != NULL && gp != NULL && fp != NULL) {
@@ -136,7 +136,7 @@ Shader *GLSLShaderModule::createShader(ResourcePool *resourcePool, String name, 
 Shader *GLSLShaderModule::createShader(ResourcePool *resourcePool, TiXmlNode *node) {
 	TiXmlNode* pChild;
 	GLSLProgram *vp = NULL;
-    GLSLProgram *gp = NULL;
+	GLSLProgram *gp = NULL;
 	GLSLProgram *fp = NULL;
 	GLSLShader *retShader = NULL;
 			
@@ -161,7 +161,7 @@ Shader *GLSLShaderModule::createShader(ResourcePool *resourcePool, TiXmlNode *no
 			}
 		}
         
-        if(strcmp(pChild->Value(), "gp") == 0) {
+		if(strcmp(pChild->Value(), "gp") == 0) {
 			String gpFileName = String(pChildElement->Attribute("source"));
 			gp = (GLSLProgram*)resourcePool->getResourceByPath(gpFileName);
 			if(!gp) {
@@ -511,13 +511,13 @@ ShaderProgram* GLSLShaderModule::createProgramFromFile(const String& extension, 
 		Logger::log("Adding GLSL vertex program %s\n", fullPath.c_str());				
 		return createGLSLProgram(fullPath, GLSLProgram::TYPE_VERT);
 	}
-    if(extension == "geom") {
-        Logger::log("Adding GLSL geometry program %s\n", fullPath.c_str());
+	if(extension == "geom") {
+		Logger::log("Adding GLSL geometry program %s\n", fullPath.c_str());
 		return createGLSLProgram(fullPath, GLSLProgram::TYPE_GEOM);
-    }
+	}
 	if(extension == "frag") {
 		Logger::log("Adding GLSL fragment program %s\n", fullPath.c_str());
 		return createGLSLProgram(fullPath, GLSLProgram::TYPE_FRAG);								
 	}
-    return NULL;
+	return NULL;
 }

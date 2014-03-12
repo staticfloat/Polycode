@@ -44,7 +44,7 @@ namespace Polycode {
 			static int getPolycodeParamType(int glType);
 			
 			void setVertexProgram(ShaderProgram *vp);
-            void setGeometryProgram(ShaderProgram *gp);
+			void setGeometryProgram(ShaderProgram *gp);
 			void setFragmentProgram(ShaderProgram *fp);
 				
 			unsigned int shader_id;		

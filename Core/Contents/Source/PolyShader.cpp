@@ -253,7 +253,7 @@ Shader::Shader(int type) : Resource(Resource::RESOURCE_SHADER) {
 	numPointLights = 0;
 	this->type = type;
 	vp = NULL;
-    gp = NULL;
+	gp = NULL;
 	fp = NULL;
 }
 

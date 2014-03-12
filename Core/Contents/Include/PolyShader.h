@@ -70,8 +70,8 @@ namespace Polycode {
 			virtual void reloadProgram() {}
 			
 			static const int TYPE_VERT = 0;
-            static const int TYPE_GEOM = 1;
-            static const int TYPE_FRAG = 2;
+			static const int TYPE_GEOM = 1;
+			static const int TYPE_FRAG = 2;
 			
 			int type;
 			
@@ -94,7 +94,7 @@ namespace Polycode {
 			int getExpectedParamType(String name);
 			
 			virtual void setVertexProgram(ShaderProgram *vp) {}
-            virtual void setGeometryProgram(ShaderProgram *gp) {}
+			virtual void setGeometryProgram(ShaderProgram *gp) {}
 			virtual void setFragmentProgram(ShaderProgram *fp) {}
 			
 			static const int FIXED_SHADER = 0;
@@ -110,7 +110,7 @@ namespace Polycode {
 			bool screenShader;
 			
 			ShaderProgram *vp;
-            ShaderProgram *gp;
+			ShaderProgram *gp;
 			ShaderProgram *fp;
 			
 		protected:

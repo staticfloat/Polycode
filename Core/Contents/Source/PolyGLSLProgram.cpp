@@ -94,10 +94,10 @@ void GLSLProgram::reloadProgram() {
 	if(type == GLSLProgram::TYPE_VERT) {
 		program =  glCreateShader(GL_VERTEX_SHADER);
 	}
-    if(type==GLSLProgram::TYPE_GEOM) {
+	if(type==GLSLProgram::TYPE_GEOM) {
 		program =  glCreateShader(GL_GEOMETRY_SHADER_EXT);
 	}
-    if(type==GLSLProgram::TYPE_FRAG) {
+	if(type==GLSLProgram::TYPE_FRAG) {
 		program =  glCreateShader(GL_FRAGMENT_SHADER);
 	}
 	

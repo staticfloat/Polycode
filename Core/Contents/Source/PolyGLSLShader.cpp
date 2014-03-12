@@ -119,15 +119,15 @@ void GLSLShader::linkProgram() {
 	expectedCubemaps.clear();
 
 	shader_id = glCreateProgram();
-    glAttachShader(shader_id, ((GLSLProgram*)fp)->program);
-    glAttachShader(shader_id, ((GLSLProgram*)gp)->program);
-    glAttachShader(shader_id, ((GLSLProgram*)vp)->program);
+	glAttachShader(shader_id, ((GLSLProgram*)fp)->program);
+	glAttachShader(shader_id, ((GLSLProgram*)gp)->program);
+	glAttachShader(shader_id, ((GLSLProgram*)vp)->program);
 	glBindAttribLocation(shader_id, 6, "vTangent");
-    glLinkProgram(shader_id);
+	glLinkProgram(shader_id);
 	if(vp) {
 		vp->addEventListener(this, Event::RESOURCE_RELOAD_EVENT);
 	}
-    if(gp) {
+	if(gp) {
 		gp->addEventListener(this, Event::RESOURCE_RELOAD_EVENT);
 	}
 	if(fp) {
@@ -169,20 +169,20 @@ void GLSLShader::unlinkProgram() {
 	if(vp) {
 		vp->removeAllHandlersForListener(this);
 	}
-    if(gp) {
-        gp->removeAllHandlersForListener(this);
-    }
+	if(gp) {
+		gp->removeAllHandlersForListener(this);
+	}
 	if(fp) {
 		fp->removeAllHandlersForListener(this);
 	}
 	glDetachShader(shader_id, ((GLSLProgram*)fp)->program);
-    glDetachShader(shader_id, ((GLSLProgram*)gp)->program);
-    glDetachShader(shader_id, ((GLSLProgram*)vp)->program);
+	glDetachShader(shader_id, ((GLSLProgram*)gp)->program);
+	glDetachShader(shader_id, ((GLSLProgram*)vp)->program);
 	glDeleteProgram(shader_id);	
 }
 
 void GLSLShader::handleEvent(Event *event) {
-    EventDispatcher * src = event->getDispatcher();
+	EventDispatcher * src = event->getDispatcher();
 	if(event->getEventCode() == Event::RESOURCE_RELOAD_EVENT && ((src == vp || src == gp) || src == fp)) {
 		unlinkProgram();
 		linkProgram();
@@ -196,9 +196,9 @@ void GLSLShader::setVertexProgram(ShaderProgram *vp) {
 }
 
 void GLSLShader::setGeometryProgram(ShaderProgram *gp) {
-    unlinkProgram();
-    this->gp = gp;
-    linkProgram();
+	unlinkProgram();
+	this->gp = gp;
+	linkProgram();
 }
 
 void GLSLShader::setFragmentProgram(ShaderProgram *fp) {
@@ -210,7 +210,7 @@ void GLSLShader::setFragmentProgram(ShaderProgram *fp) {
 GLSLShader::GLSLShader(GLSLProgram *vp, GLSLProgram *gp, GLSLProgram *fp) : Shader(Shader::MODULE_SHADER) {
 	this->vp = vp;
 	this->fp = fp;
-    this->gp = gp;
+	this->gp = gp;
 	
 	linkProgram();
 }

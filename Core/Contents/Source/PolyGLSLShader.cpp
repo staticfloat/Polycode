@@ -25,6 +25,7 @@ THE SOFTWARE.
 
 #include "PolyLogger.h"
 #include "PolyShader.h"
+#include "PolyCoreServices.h"
 #include "PolyGLSLProgram.h"
 #include "PolyTexture.h"
 #include "PolyCubemap.h"
@@ -124,6 +125,21 @@ void GLSLShader::linkProgram() {
 	glAttachShader(shader_id, ((GLSLProgram*)vp)->program);
 	glBindAttribLocation(shader_id, 6, "vTangent");
 	glLinkProgram(shader_id);
+	
+	// Check to make sure we linked properly
+	GLint linked = true;
+	glGetProgramiv(shader_id, GL_LINK_STATUS, &linked);
+	if(!linked) {
+		GLint length;
+		GLchar* log;
+		glGetProgramiv(shader_id, GL_INFO_LOG_LENGTH, &length);
+		log = (GLchar*)malloc(length);
+		glGetProgramInfoLog(shader_id, length, &length, log);
+		printf("GLSL ERROR: %s\n", log);
+		CoreServices::getInstance()->getLogger()->logBroadcast("GLSL ERROR:" + String(log));
+		free(log);
+	}
+	
 	if(vp) {
 		vp->addEventListener(this, Event::RESOURCE_RELOAD_EVENT);
 	}

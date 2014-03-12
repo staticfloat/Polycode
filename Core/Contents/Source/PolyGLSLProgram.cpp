@@ -56,6 +56,7 @@ extern PFNGLLINKPROGRAMPROC glLinkProgram;
 extern PFNGLDETACHSHADERPROC glDetachShader;
 extern PFNGLDELETESHADERPROC glDeleteShader;
 extern PFNGLDELETEPROGRAMPROC glDeleteProgram;
+extern PFNGLGETPROGRAMINFOLOGPROC glGetProgramInfoLog;
 #ifndef _MINGW
 extern PFNGLGETUNIFORMLOCATIONARBPROC glGetUniformLocation;
 #endif

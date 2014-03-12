@@ -33,7 +33,7 @@ namespace Polycode {
 
 	class _PolyExport GLSLShader : public Shader {
 		public:
-			GLSLShader(GLSLProgram *vp, GLSLProgram *fp);
+			GLSLShader(GLSLProgram *vp, GLSLProgram *gp, GLSLProgram *fp);
 			virtual ~GLSLShader();
 
 			ShaderBinding *createBinding();
@@ -44,7 +44,8 @@ namespace Polycode {
 			static int getPolycodeParamType(int glType);
 			
 			void setVertexProgram(ShaderProgram *vp);
-			void setFragmentProgram(ShaderProgram *fp);			
+            void setGeometryProgram(ShaderProgram *gp);
+			void setFragmentProgram(ShaderProgram *fp);
 				
 			unsigned int shader_id;		
 			

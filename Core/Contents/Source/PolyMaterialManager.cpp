@@ -208,13 +208,13 @@ Shader *MaterialManager::getShaderByIndex(unsigned int index) {
 		return NULL;
 }
 
-Shader *MaterialManager::createShader(ResourcePool *resourcePool, String shaderType, String name, String vpName, String fpName, bool screenShader) {
+Shader *MaterialManager::createShader(ResourcePool *resourcePool, String shaderType, String name, String vpName, String gpName, String fpName, bool screenShader) {
 	Shader *retShader = NULL;
 	
 	for(int m=0; m < shaderModules.size(); m++) {
 		PolycodeShaderModule *shaderModule = shaderModules[m];
 		if(shaderModule->getShaderType() == shaderType) {
-			retShader = shaderModule->createShader(resourcePool, name, vpName, fpName);
+			retShader = shaderModule->createShader(resourcePool, name, vpName, gpName, fpName);
 		}
 	}
 	

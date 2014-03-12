@@ -42,7 +42,7 @@ namespace Polycode {
 			void reloadPrograms();
 			String getShaderType();
 			Shader *createShader(ResourcePool *resourcePool, TiXmlNode *node);
-			Shader *createShader(ResourcePool *resourcePool, String name, String vpName, String fpName);
+			Shader *createShader(ResourcePool *resourcePool, String name, String vpName, String gpName, String fpName);
 			bool applyShaderMaterial(Renderer *renderer, Material *material, ShaderBinding *localOptions, unsigned int shaderIndex);	
 			void clearShader();
 		

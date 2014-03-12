@@ -206,7 +206,9 @@ void CocoaCore::_setVideoMode(int xRes, int yRes, bool fullScreen, bool vSync, i
 		attrs[atindx++] = NSOpenGLPFAMultisample;	
 	}
 	
-	attrs[atindx++] = NSOpenGLPFANoRecovery;		
+	attrs[atindx++] = NSOpenGLPFANoRecovery;
+	attrs[atindx++] = NSOpenGLPFAOpenGLProfile;
+	attrs[atindx++] = NSOpenGLProfileVersion3_2Core;
 	
 	attrs[atindx++] = NSOpenGLPFAAccelerated;			
 	attrs[atindx++] = nil;					

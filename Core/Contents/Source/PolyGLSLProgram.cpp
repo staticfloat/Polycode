@@ -93,12 +93,16 @@ void GLSLProgram::reloadProgram() {
 	
 	if(type == GLSLProgram::TYPE_VERT) {
 		program =  glCreateShader(GL_VERTEX_SHADER);
-	} else {
+	}
+    if(type==GLSLProgram::TYPE_GEOM) {
+		program =  glCreateShader(GL_GEOMETRY_SHADER_EXT);
+	}
+    if(type==GLSLProgram::TYPE_FRAG) {
 		program =  glCreateShader(GL_FRAGMENT_SHADER);
 	}
 	
 	glShaderSource(program, 1, (const GLchar**)&buffer, 0);
-	glCompileShader(program);	
+	glCompileShader(program);
 	
 	GLint compiled = true;
     glGetShaderiv(program, GL_COMPILE_STATUS, &compiled);

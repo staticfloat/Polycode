@@ -19,7 +19,7 @@ SET(polycore_SRCS
     Source/PolyEventHandler.cpp
     Source/PolyFixedShader.cpp
     Source/PolyFont.cpp
-	Source/PolyFontGlyphSheet.cpp
+    Source/PolyFontGlyphSheet.cpp
     Source/PolyFontManager.cpp
     Source/PolyGLCubemap.cpp
     Source/PolyGLRenderer.cpp
@@ -27,6 +27,7 @@ SET(polycore_SRCS
     Source/PolyGLSLShader.cpp
     Source/PolyGLSLShaderModule.cpp
     Source/PolyGLTexture.cpp
+    Source/PolyGLUniform.cpp
     Source/PolyGLVertexBuffer.cpp
     Source/PolyImage.cpp
     Source/PolyInputEvent.cpp
@@ -61,8 +62,8 @@ SET(polycore_SRCS
     Source/PolySound.cpp
     Source/PolySoundManager.cpp
     Source/PolyString.cpp
-	Source/PolyTextMesh.cpp
-	Source/PolyTexture.cpp
+    Source/PolyTextMesh.cpp
+    Source/PolyTexture.cpp
     Source/PolyThreaded.cpp
     Source/PolyTimer.cpp
     Source/PolyTimerManager.cpp
@@ -104,7 +105,7 @@ SET(polycore_HDRS
     Include/PolyEventHandler.h
     Include/PolyFixedShader.h
     Include/PolyFont.h
-	Include/PolyFontGlyphSheet.h
+    Include/PolyFontGlyphSheet.h
     Include/PolyFontManager.h
     Include/PolyGLCubemap.h
     Include/PolyGLHeaders.h
@@ -114,6 +115,7 @@ SET(polycore_HDRS
     Include/PolyGLSLShader.h
     Include/PolyGLSLShaderModule.h
     Include/PolyGLTexture.h
+    Include/PolyGLUniform.h
     Include/PolyGLVertexBuffer.h
     Include/PolyImage.h
     Include/PolyInputEvent.h

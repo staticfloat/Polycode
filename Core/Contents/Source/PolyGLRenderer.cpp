@@ -81,6 +81,7 @@ PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC glFramebufferRenderbufferEXT;
 PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVEXTPROC glGetFramebufferAttachmentParameterivEXT;
 PFNGLGENERATEMIPMAPEXTPROC glGenerateMipmapEXT;
 
+
 #endif
 using namespace Polycode;
 
@@ -151,6 +152,7 @@ void OpenGLRenderer::initOSSpecific(){
         glFramebufferRenderbufferEXT = (PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC)wglGetProcAddress("glFramebufferRenderbufferEXT");
         glGetFramebufferAttachmentParameterivEXT = (PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVEXTPROC)wglGetProcAddress("glGetFramebufferAttachmentParameterivEXT");
         glGenerateMipmapEXT = (PFNGLGENERATEMIPMAPEXTPROC)wglGetProcAddress("glGenerateMipmapEXT");
+
 
 #endif
 }
@@ -775,6 +777,30 @@ void OpenGLRenderer::clearShader() {
 	currentMaterial = NULL;
 }
 
+void OpenGLRenderer::CheckAndOutputError(){
+	GLenum err = GL_NO_ERROR;
+	while((err = glGetError()) != GL_NO_ERROR) {
+		Logger::log("GL Error: ");
+		switch (err) {
+		case GL_INVALID_OPERATION:
+			Logger::log("Invalid Operation.\n");
+			break;
+		case GL_INVALID_ENUM:
+			Logger::log("Invalid Enum.\n");
+			break;
+		case GL_INVALID_VALUE:
+			Logger::log("Invalid Value.\n");
+			break;
+		case GL_OUT_OF_MEMORY:
+			Logger::log("Out of Memory.\n");
+			break;
+		case GL_INVALID_FRAMEBUFFER_OPERATION:
+			Logger::log("Invalid Framebuffer Operation.\n");
+			break;
+		}
+	}
+}
+
 void OpenGLRenderer::setTexture(Texture *texture) {
 
 	if(texture == NULL) {
@@ -1068,6 +1094,7 @@ void OpenGLRenderer::setVertexColor(Number r, Number g, Number b, Number a) {
 }
 
 void OpenGLRenderer::EndRender() {
+	CheckAndOutputError();
 ///	glFlush();
 //	glFinish();	
 }

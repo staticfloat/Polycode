@@ -26,6 +26,10 @@
 #include <string>
 #include <iostream>
 
+#ifdef _MSC_VER
+#include <Windows.h>
+#endif
+
 using namespace Polycode;
 
 LoggerEvent::LoggerEvent(String message) : Event() {
@@ -57,10 +61,10 @@ void Logger::logw(const char *str) {
 void Logger::log(const char *format, ...) {
 	va_list args;
 	va_start(args, format);
-	vfprintf(stderr, format, args);
+	vfprintf(stdout, format, args);
 	va_end(args);
 
-#ifdef MSVC
+#ifdef _MSC_VER
 #ifdef _DEBUG
 	
 	char buffer[4096];

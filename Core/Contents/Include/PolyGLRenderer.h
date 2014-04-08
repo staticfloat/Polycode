@@ -200,7 +200,9 @@ namespace Polycode {
 		void setDepthFunction(int depthFunction);
 						
 		void clearShader();
-		
+
+		void CheckAndOutputError();
+
 	protected:
 		void initOSSpecific();
 		

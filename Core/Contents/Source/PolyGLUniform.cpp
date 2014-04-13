@@ -1,17 +1,33 @@
 #include "PolyGLUniform.h"
-#include "GLee.h"
-#include "GL\glext.h"
+#include "PolyGLHeaders.h"
 
 namespace Polycode {
 	
+#ifdef _WINDOWS
 	PFNGLGETUNIFORMBLOCKINDEXPROC glGetUniformBlockIndex;
 	PFNGLUNIFORMBLOCKBINDINGPROC glUniformBlockBinding;
+	PFNGLGENBUFFERSPROC glGenBuffers;
+	PFNGLBINDBUFFERPROC glBindBuffer;
+	PFNGLBUFFERDATAPROC glBufferData;
+	PFNGLBINDBUFFERBASEPROC glBindBufferBase;
+	PFNGLDELETEBUFFERSPROC glDeleteBuffers;
+	PFNGLBUFFERSUBDATAPROC glBufferSubData;
+#endif
 
 	void GLUniformBufferObject::InitOSSpecific() {
+#ifdef _WINDOWS
 		glGetUniformBlockIndex = (PFNGLGETUNIFORMBLOCKINDEXPROC)wglGetProcAddress("glGetUniformBlockIndex");
 		glUniformBlockBinding = (PFNGLUNIFORMBLOCKBINDINGPROC)wglGetProcAddress("glUniformBlockBinding");
+		glGenBuffers = (PFNGLGENBUFFERSPROC)wglGetProcAddress("glGenBuffers");
+		glBindBuffer = (PFNGLBINDBUFFERPROC)wglGetProcAddress("glBindBuffer");
+		glBufferData = (PFNGLBUFFERDATAPROC)wglGetProcAddress("glBufferData");
+		glBindBufferBase = (PFNGLBINDBUFFERBASEPROC)wglGetProcAddress("glBindBufferBase");
+		glDeleteBuffers = (PFNGLDELETEBUFFERSPROC)wglGetProcAddress("glDeleteBuffers");
+		glBufferSubData = (PFNGLBUFFERSUBDATAPROC)wglGetProcAddress("glBufferSubData");
+#endif
 	}
-
+	int GLUniformBufferObject::s_index = 0;
+	std::vector< GLUniformBufferObject*> GLUniformBufferObject::s_buffers;
 	void GLUniformBufferObject::BindAll(unsigned int program){
 		for (auto it = s_buffers.begin(); it != s_buffers.end(); it++)
 		{
@@ -40,7 +56,8 @@ namespace Polycode {
 			Uninitialize();
 	}
 
-	void GLUniformBufferObject::Initialize() {
+	void GLUniformBufferObject::Initialize( int size ) {
+		m_size = size;
 		glGenBuffers(1, &m_UBOIndex);
 		glBindBuffer(GL_UNIFORM_BUFFER, m_UBOIndex);
 		glBufferData(GL_UNIFORM_BUFFER, m_size, NULL, GL_STREAM_DRAW);

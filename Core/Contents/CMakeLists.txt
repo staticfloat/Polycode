@@ -22,6 +22,7 @@ SET(polycore_SRCS
     Source/PolyFontGlyphSheet.cpp
     Source/PolyFontManager.cpp
     Source/PolyGLCubemap.cpp
+    Source/PolyGLMatrixStacks.cpp
     Source/PolyGLRenderer.cpp
     Source/PolyGLSLProgram.cpp
     Source/PolyGLSLShader.cpp
@@ -36,6 +37,7 @@ SET(polycore_SRCS
     Source/PolyMaterial.cpp
     Source/PolyMaterialManager.cpp
     Source/PolyMatrix4.cpp
+    Source/PolyMatrixStack.cpp
     Source/PolyMesh.cpp
     Source/PolyModule.cpp
     Source/PolyObject.cpp
@@ -109,6 +111,7 @@ SET(polycore_HDRS
     Include/PolyFontManager.h
     Include/PolyGLCubemap.h
     Include/PolyGLHeaders.h
+    Include/PolyGLMatrixStacks.h
     Include/PolyGlobals.h
     Include/PolyGLRenderer.h
     Include/PolyGLSLProgram.h
@@ -125,6 +128,7 @@ SET(polycore_HDRS
     Include/PolyMaterial.h
     Include/PolyMaterialManager.h
     Include/PolyMatrix4.h
+    Include/PolyMatrixStack.h
     Include/PolyMesh.h
     Include/PolyModule.h
     Include/PolyObject.h

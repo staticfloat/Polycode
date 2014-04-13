@@ -20,12 +20,12 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-
+#include "PolyGlobals.h"
 #include "PolyString.h"
 
 namespace Polycode {
 
-	class GLUniformBufferObject {
+	class _PolyExport GLUniformBufferObject {
 
 		// Static GLUniformBufferObject members and variables
 	protected:
@@ -50,7 +50,7 @@ namespace Polycode {
 		GLUniformBufferObject(String name);
 		~GLUniformBufferObject();
 
-		void Initialize();
+		void Initialize(int size);
 		void Uninitialize();
 
 		void BindToShader(unsigned int programBuffer);

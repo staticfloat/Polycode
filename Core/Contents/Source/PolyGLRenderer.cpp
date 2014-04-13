@@ -103,6 +103,7 @@ bool OpenGLRenderer::Init() {
 		return false;
 
 	glDisable(GL_SCISSOR_TEST);
+	m_stacks.Initialize();
 
 	return true;
 }
@@ -155,6 +156,8 @@ void OpenGLRenderer::initOSSpecific(){
 
 
 #endif
+		GLUniformBufferObject::InitOSSpecific();
+		GLMatrixStacks::InitOSSpecific();
 }
 
 void OpenGLRenderer::Resize(int xRes, int yRes) {
@@ -189,6 +192,8 @@ void OpenGLRenderer::setDepthFunction(int depthFunction) {
 }
 
 void OpenGLRenderer::enableAlphaTest(bool val) {
+	Logger::log("Alpha test no longer makes sense, implement it in shaders.\n");
+	return;
 	if(val) {
 		glAlphaFunc ( GL_GREATER, alphaTestValue) ;
 		glEnable ( GL_ALPHA_TEST ) ;		
@@ -198,6 +203,8 @@ void OpenGLRenderer::enableAlphaTest(bool val) {
 }
 
 void OpenGLRenderer::setPointSmooth(bool val) {
+	Logger::log("Point Smooth has been deprecated.\n");
+	return;
 	if(val)
 		glEnable( GL_POINT_SMOOTH );
 	else
@@ -213,23 +220,38 @@ void OpenGLRenderer::setLineSmooth(bool val) {
 }
 
 void OpenGLRenderer::setProjectionFromFrustum(Number left, Number right, Number bottom, Number top, Number front, Number back) {
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glFrustum(left, right, bottom, top, front, back);
-	glMatrixMode(GL_MODELVIEW);
-	polycodeGLGetNumberv(GL_PROJECTION_MATRIX, sceneProjectionMatrix);
+	//glMatrixMode(GL_PROJECTION);
+	//glLoadIdentity();
+	m_stacks.SetState(MT_PROJECTION);
+	m_stacks.GetMatrixStack().LoadIdentity();
+
+	//glFrustum(left, right, bottom, top, front, back);
+	m_stacks.GetMatrixStack().Frustrum(left, right, bottom, top, front, back);
+	memcpy(sceneProjectionMatrix, &m_stacks.GetMatrixStack().GetTop().m[0], sizeof(Number)* 4 * 4 * 2);
+	//glMatrixMode(GL_MODELVIEW);
+	//polycodeGLGetNumberv(GL_PROJECTION_MATRIX, sceneProjectionMatrix);
 
 }
 
 void OpenGLRenderer::setProjectionFromFoV(Number fov, Number _near, Number _far) {
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
+	m_stacks.SetState(MT_PROJECTION);
+	m_stacks.GetMatrixStack().LoadIdentity();
+
+	//glMatrixMode(GL_PROJECTION);
+	//glLoadIdentity();
+
 	Number fW, fH;
 	fH = tan( fov / 360.0 * PI ) * _near;
 	fW = fH * ((GLfloat)viewportWidth/(GLfloat)viewportHeight);
-	glFrustum(-fW + (viewportShift.x*fW*2.0), fW + (viewportShift.x*fW*2.0), -fH + (viewportShift.y*fH*2.0), fH + (viewportShift.y*fH*2.0), _near, _far);
-	glMatrixMode(GL_MODELVIEW);
-	polycodeGLGetNumberv(GL_PROJECTION_MATRIX, sceneProjectionMatrix);
+	
+	m_stacks.GetMatrixStack().Frustrum(-fW + (viewportShift.x*fW*2.0), fW + (viewportShift.x*fW*2.0), -fH + (viewportShift.y*fH*2.0), fH + (viewportShift.y*fH*2.0), _near, _far);
+	
+	memcpy(sceneProjectionMatrix, &m_stacks.GetMatrixStack().GetTop().m[0], sizeof(Number)* 4 * 4 * 2);
+
+	m_stacks.SetState(MT_MODEL);
+	
+	//glMatrixMode(GL_MODELVIEW);
+	//polycodeGLGetNumberv(GL_PROJECTION_MATRIX, sceneProjectionMatrix);
 }
 
 void OpenGLRenderer::resetViewport() {
@@ -349,12 +371,18 @@ void OpenGLRenderer::enableDepthTest(bool val) {
 }
 
 void OpenGLRenderer::setModelviewMatrix(Matrix4 m) {
-	glLoadMatrixd(m.ml);
+	m_stacks.SetState(MT_MODEL);
+	m_stacks.GetMatrixStack().GetTop() = m;
+	m_stacks.GetMatrixStack().SetDirty();
 }
 
 void OpenGLRenderer::multModelviewMatrix(Matrix4 m) {
 //	glMatrixMode(GL_MODELVIEW);
-	glMultMatrixd(m.ml);
+	m_stacks.SetState(MT_MODEL);
+	m_stacks.GetMatrixStack().GetTop() = m_stacks.GetMatrixStack().GetTop() * m;
+	m_stacks.GetMatrixStack().SetDirty();
+
+	//glMultMatrixd(m.ml);
 }
 
 void OpenGLRenderer::enableLighting(bool enable) {
@@ -450,6 +478,8 @@ void OpenGLRenderer::setScissorBox(Polycode::Rectangle box) {
 }
 
 void OpenGLRenderer::enableFog(bool enable) {
+	Logger::log("Fog is deprecated.\n");
+	return;
 	if(enable)
 		glEnable(GL_FOG);
 	else {
@@ -493,15 +523,27 @@ void OpenGLRenderer::setBlendingMode(int blendingMode) {
 }
 
 Matrix4 OpenGLRenderer::getProjectionMatrix() {
-	Number m[16];
+	/*Number m[16];
 	glGetDoublev( GL_PROJECTION_MATRIX, m);
-	return Matrix4(m);
+	return Matrix4(m);*/
+	MATRIXTYPE mType = m_stacks.GetState();
+	m_stacks.SetState(MT_PROJECTION);
+	Matrix4& m = m_stacks.GetMatrixStack().GetTop();
+	m_stacks.SetState(mType);
+	return m;
+
 }
 
 Matrix4 OpenGLRenderer::getModelviewMatrix() {
-	Number m[16];
-    glGetDoublev( GL_MODELVIEW_MATRIX, m);
-	return Matrix4(m);
+	//Number m[16];
+ //   glGetDoublev( GL_MODELVIEW_MATRIX, m);
+	//return Matrix4(m);
+
+	MATRIXTYPE mType = m_stacks.GetState();
+	m_stacks.SetState(MT_MODEL);
+	Matrix4& m = m_stacks.GetMatrixStack().GetTop();
+	m_stacks.SetState(mType);
+	return m;
 }
 
 Image *OpenGLRenderer::renderBufferToImage(Texture *texture) {
@@ -530,6 +572,8 @@ Image *OpenGLRenderer::renderScreenToImage() {
 }
 
 void OpenGLRenderer::setFogProperties(int fogMode, Color color, Number density, Number startDepth, Number endDepth) {
+	Logger::log("Fog is deprecated.\n");
+	return;
 	switch(fogMode) {
 		case FOG_LINEAR:
 			glFogi(GL_FOG_MODE, GL_LINEAR);
@@ -578,10 +622,13 @@ void OpenGLRenderer::enableBackfaceCulling(bool val) {
 void OpenGLRenderer::setPerspectiveDefaults() {
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
+	//glMatrixMode(GL_MODELVIEW);
+	//glLoadIdentity();
 	
-	glGetDoublev( GL_PROJECTION_MATRIX, sceneProjectionMatrix);
+	m_stacks.SetState(MT_PROJECTION);
+	memcpy(sceneProjectionMatrix, &m_stacks.GetMatrixStack().GetTop().m[0], sizeof(Number));
+
+	//glGetDoublev( GL_PROJECTION_MATRIX, sceneProjectionMatrix);
 	currentTexture = NULL;
 }
 
@@ -590,20 +637,24 @@ void OpenGLRenderer::BeginRender() {
 		glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
-	glLoadIdentity();
+	m_stacks.GetMatrixStack().LoadIdentity();
+	//glLoadIdentity();
 	currentTexture = NULL;
 }
 
 void OpenGLRenderer::translate3D(const Vector3 &position) {
-	glTranslatef(position.x, position.y, position.z);
+	//glTranslatef(position.x, position.y, position.z);
+	m_stacks.GetMatrixStack().Translate(position.x, position.y, position.z);
 }
 
 void OpenGLRenderer::translate3D(Number x, Number y, Number z) {
-	glTranslatef(x, y, z);
+	//glTranslatef(x, y, z);
+	m_stacks.GetMatrixStack().Translate(x, y, z);
 }
 
 void OpenGLRenderer::scale3D(const Vector3 &scale) {
-	glScalef(scale.x, scale.y, scale.z);
+	//glScalef(scale.x, scale.y, scale.z);
+	m_stacks.GetMatrixStack().Scale(scale.x, scale.y, scale.z);
 }
 
 void OpenGLRenderer::bindFrameBufferTextureDepth(Texture *texture) {
@@ -802,7 +853,8 @@ void OpenGLRenderer::CheckAndOutputError(){
 }
 
 void OpenGLRenderer::setTexture(Texture *texture) {
-
+	Logger::log("Textures need to be re implemented to match new renderer.\n");
+	return;
 	if(texture == NULL) {
 		glActiveTexture(GL_TEXTURE0);		
 		glDisable(GL_TEXTURE_2D);
@@ -821,18 +873,22 @@ void OpenGLRenderer::setTexture(Texture *texture) {
 }
 
 void OpenGLRenderer::pushMatrix() {
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
+	//glMatrixMode(GL_MODELVIEW);
+	//glPushMatrix();
+	m_stacks.SetState(MT_MODEL);
+	m_stacks.GetMatrixStack().PushMatrix();
 }
 
 void OpenGLRenderer::popMatrix() {
-	glMatrixMode(GL_MODELVIEW);
-	glPopMatrix();
+	//glMatrixMode(GL_MODELVIEW);
+	//glPopMatrix();
+	m_stacks.SetState(MT_MODEL);
+	m_stacks.GetMatrixStack().PopMatrix();
 }
 
 void OpenGLRenderer::pushRenderDataArray(RenderDataArray *array) {
 		
-	
+	//Aaaaaand this is next
 	switch(array->arrayType) {
 		case RenderDataArray::VERTEX_DATA_ARRAY:
 			glEnableClientState(GL_VERTEX_ARRAY);
@@ -1039,10 +1095,16 @@ void OpenGLRenderer::drawArrays(int drawType) {
 }
 
 void OpenGLRenderer::drawScreenQuad(Number qx, Number qy) {
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
+	//glMatrixMode(GL_PROJECTION);
+	//glPushMatrix();
+	m_stacks.SetState(MT_PROJECTION);
+	m_stacks.GetMatrixStack().PushMatrix();
+	
+	//glMatrixMode(GL_MODELVIEW);
+	//glPushMatrix();
+	m_stacks.SetState(MT_MODEL);
+	m_stacks.GetMatrixStack().PushMatrix();
+
 	setProjectionOrtho();
 	
 	Number xscale = qx/((Number)viewportWidth) * 2.0f;
@@ -1064,32 +1126,46 @@ void OpenGLRenderer::drawScreenQuad(Number qx, Number qy) {
 		glVertex2f(-1+(1.0f*xscale), -1+(1.0f*yscale));
 	glEnd();
 
-	glMatrixMode(GL_PROJECTION);
-	glPopMatrix();
-	glMatrixMode(GL_MODELVIEW);
-	glPopMatrix();
+	m_stacks.SetState(MT_PROJECTION);
+	m_stacks.GetMatrixStack().PopMatrix();
+	m_stacks.SetState(MT_MODEL);
+	m_stacks.GetMatrixStack().PopMatrix();
+
+
+	//glMatrixMode(GL_PROJECTION);
+	//glPopMatrix();
+	//glMatrixMode(GL_MODELVIEW);
+	//glPopMatrix();
+	
 	setPerspectiveDefaults();
 }
 
 
 void OpenGLRenderer::translate2D(Number x, Number y) {
-	glTranslatef(x, y, 0.0f);
+	//glTranslatef(x, y, 0.0f);
+	m_stacks.GetMatrixStack().Translate(x, y, 0.0f);
 }
 
 void OpenGLRenderer::scale2D(const Vector2 &scale) {
-	glScalef(scale.x, scale.y, 1.0f);
+	//glScalef(scale.x, scale.y, 1.0f);
+	m_stacks.GetMatrixStack().Scale(scale.x, scale.y, 1.0f);
 }
 
 void OpenGLRenderer::loadIdentity() {
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
+	//glMatrixMode(GL_MODELVIEW);
+	//glLoadIdentity();
+	m_stacks.SetState(MT_MODEL);
+	m_stacks.GetMatrixStack().LoadIdentity();
 }
 
 void OpenGLRenderer::rotate2D(Number angle) {
-	glRotatef(angle, 0.0f, 0.0f, 1.0f);
+	//glRotatef(angle, 0.0f, 0.0f, 1.0f);
+	m_stacks.GetMatrixStack().Rotate(angle, 0, 0, 1.0f);
 }
 
 void OpenGLRenderer::setVertexColor(Number r, Number g, Number b, Number a) {
+	Logger::log("Vertex color has not been updated, currently unavailable.\n");
+	return;
 	glColor4f(r,g,b,a);
 }
 

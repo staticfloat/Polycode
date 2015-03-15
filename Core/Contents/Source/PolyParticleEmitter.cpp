@@ -32,6 +32,7 @@ SceneParticleEmitter::SceneParticleEmitter(unsigned int particleCount, Number li
     
     core = CoreServices::getInstance()->getCore();
 	timeStep = core->getRefreshIntervalMs() / 1000.0f;
+	int size = sizeof(Perlin);
     motionPerlin = new Perlin(3,5,1.0,RANDOM_NUMBER);
     mesh->useVertexColors = true;
     depthWrite = false;

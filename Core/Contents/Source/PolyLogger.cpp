@@ -31,6 +31,10 @@
 #include <iostream>
 #include <time.h>
 
+#ifdef _MSC_VER
+#include <Windows.h>
+#endif
+
 using namespace Polycode;
 
 Logger* Logger::overrideInstance = NULL;
@@ -68,7 +72,7 @@ void Logger::logw(const char *str) {
 void Logger::log(const char *format, ...) {
 	va_list args;
 	va_start(args, format);
-	vfprintf(stderr, format, args);
+	vfprintf(stdout, format, args);
 	va_end(args);
 	
 	if (Logger::getInstance()->getLogToFile()){

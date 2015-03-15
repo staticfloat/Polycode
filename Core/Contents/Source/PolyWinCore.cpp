@@ -302,6 +302,55 @@ void Win32Core::setVideoMode(int xRes, int yRes, bool fullScreen, bool vSync, in
 
 	core->dispatchEvent(new Event(), Core::EVENT_CORE_RESIZE);
 }
+// This is all mostly taken from 
+// http://blog.nobel-joergensen.com/2013/02/17/debugging-opengl-part-2-using-gldebugmessagecallback/
+
+void APIENTRY openglCallbackFunction(GLenum source,
+	GLenum type,
+	GLuint id,
+	GLenum severity,
+	GLsizei length,
+	const GLchar* message,
+	void* userParam)
+{
+	Logger::log("OpenGL Error ================\n");
+	Logger::log("message: ");
+	Logger::log(message);
+	Logger::log("\nType: ");
+	switch (type) {
+	case GL_DEBUG_TYPE_ERROR:
+		Logger::log("Error!\n");
+		break;
+	case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
+		Logger::log("Deprecated Behaviour.\n");
+		break;
+	case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
+		Logger::log("Undefined Behaviour.\n");
+		break;
+	case GL_DEBUG_TYPE_PORTABILITY:
+		Logger::log("Portability.\n");
+		break;
+	case GL_DEBUG_TYPE_PERFORMANCE:
+		Logger::log("Performance.\n");
+		break;
+	case GL_DEBUG_TYPE_OTHER:
+		Logger::log("Other.\n");
+		break;
+	}
+	Logger::log(" Severity: ");
+	switch (severity){
+	case GL_DEBUG_SEVERITY_HIGH:
+		Logger::log("HIGH.\n");
+		break;
+	case GL_DEBUG_SEVERITY_MEDIUM:
+		Logger::log("MEDIUM.\n");
+		break;
+	case GL_DEBUG_SEVERITY_LOW:
+		Logger::log("LOW.\n");
+		break;
+	}
+	Logger::log("End of OpenGL Error===============\n");
+}
 
 void Win32Core::initContext(bool usePixelFormat, unsigned int pixelFormat) {
 
@@ -352,13 +401,91 @@ void Win32Core::initContext(bool usePixelFormat, unsigned int pixelFormat) {
 		Logger::log("Can't Create A GL Rendering Context.\n");
 		return;							// Return FALSE
 	}
-
-	if(!wglMakeCurrent(hDC,hRC))						// Try To Activate The Rendering Context
+	
+	if (!wglMakeCurrent(hDC, hRC))						// Try To Activate The Rendering Context
 	{
 		Logger::log("Can't Activate The GL Rendering Context.\n");
 		return;							// Return FALSE
 	}
+
+	const int iPixelFormatAttribList[] =
+	{
+		WGL_DRAW_TO_WINDOW_ARB, GL_TRUE,
+		WGL_SUPPORT_OPENGL_ARB, GL_TRUE,
+		WGL_DOUBLE_BUFFER_ARB, GL_TRUE,
+		WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB,
+		WGL_COLOR_BITS_ARB, 32,
+		WGL_DEPTH_BITS_ARB, 24,
+		WGL_STENCIL_BITS_ARB, 8,
+		0
+	};
+	int iContextAttribs[] =
+	{
+		WGL_CONTEXT_MAJOR_VERSION_ARB, 4,
+		WGL_CONTEXT_MINOR_VERSION_ARB, 3,
+#ifdef _DEBUG
+		WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_DEBUG_BIT_ARB,
+#endif
+		0
+	};
+	
+	int pFormat = 0;
+	UINT numFormats;
+	PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormatARB = (PFNWGLCHOOSEPIXELFORMATARBPROC)wglGetProcAddress("wglChoosePixelFormatARB");
+	if (!wglChoosePixelFormatARB)
+	{
+		Logger::log("Could not fetch process address for wglChoosePixelFormatARB");
+		return;
+	}
+	wglChoosePixelFormatARB(hDC, iPixelFormatAttribList, NULL, 1, &pFormat, &numFormats);
+	SetPixelFormat(hDC, pFormat, &pfd);
+
+	HGLRC temp = hRC;
+	PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress("wglCreateContextAttribsARB");
+	if (!wglCreateContextAttribARB)
+	{
+		Logger::log("Failed to fetch process address for wglCreateContextAttribsArb.\n");
+		return;
+	}
+	hRC = wglCreateContextAttribARB(hDC, 0, iContextAttribs);
+	if (!hRC)
+	{
+		hRC = temp;
+		Logger::log("Failed to create 3.2 OpenGL context.\n");
+		return;
+	}
+	
+	wglMakeCurrent(hDC, NULL);
+	wglDeleteContext(temp); // delete old context
+	wglMakeCurrent(hDC, hRC);
+	((OpenGLRenderer*)renderer)->CheckAndOutputError();
+
+#ifdef _DEBUG
+	PFNGLDEBUGMESSAGECALLBACKPROC glDebugMessageCallback =
+		(PFNGLDEBUGMESSAGECALLBACKPROC)wglGetProcAddress("glDebugMessageCallback");
+	
+	PFNGLDEBUGMESSAGECONTROLPROC glDebugMessageControl =
+		(PFNGLDEBUGMESSAGECONTROLARBPROC)wglGetProcAddress("glDebugMessageControl");
+
+	if (!glDebugMessageCallback || !glDebugMessageControl)
+	{
+		Logger::log("Could not create debug message callback.\n");
+		return;
+	}
+
+	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+	glDebugMessageCallback(openglCallbackFunction, nullptr);
+	GLuint unusedIds = 0;
+	glDebugMessageControl(GL_DONT_CARE,
+		GL_DONT_CARE,
+		GL_DONT_CARE,
+		0,
+		&unusedIds,
+		true);
+#endif
 }
+
+
 
 void Win32Core::destroyContext() {
 

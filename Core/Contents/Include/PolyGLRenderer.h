@@ -31,6 +31,7 @@ THE SOFTWARE.
 #endif
 
 #include "PolyGLHeaders.h"
+#include "PolyGLMatrixStacks.h"
 /*
 #ifdef _WINDOWS 
 #define GL_EXT_framebuffer_object           1
@@ -198,15 +199,18 @@ namespace Polycode {
 		void setDepthFunction(int depthFunction);
 						
 		void clearShader();
-		
+
+		void CheckAndOutputError();
+
 	protected:
 		void initOSSpecific();
 		
+		GLMatrixStacks m_stacks;
+		
+		Number sceneProjectionMatrix[16];
+		Number sceneProjectionMatrixOrtho[16];	
 		int verticesToDraw;
-		
-		GLdouble sceneProjectionMatrix[16];
-		GLdouble sceneProjectionMatrixOrtho[16];	
-		
+
 	};
 }
 

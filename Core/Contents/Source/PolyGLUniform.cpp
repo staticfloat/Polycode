@@ -3,7 +3,7 @@
 
 namespace Polycode {
 	
-#ifdef _WINDOWS
+#if defined(_WINDOWS) && !defined(_MINGW)
 	PFNGLGETUNIFORMBLOCKINDEXPROC glGetUniformBlockIndex;
 	PFNGLUNIFORMBLOCKBINDINGPROC glUniformBlockBinding;
 	PFNGLGENBUFFERSPROC glGenBuffers;
@@ -15,7 +15,7 @@ namespace Polycode {
 #endif
 
 	void GLUniformBufferObject::InitOSSpecific() {
-#ifdef _WINDOWS
+#if defined(_WINDOWS) && !defined(_MINGW)
 		glGetUniformBlockIndex = (PFNGLGETUNIFORMBLOCKINDEXPROC)wglGetProcAddress("glGetUniformBlockIndex");
 		glUniformBlockBinding = (PFNGLUNIFORMBLOCKBINDINGPROC)wglGetProcAddress("glUniformBlockBinding");
 		glGenBuffers = (PFNGLGENBUFFERSPROC)wglGetProcAddress("glGenBuffers");

@@ -103,13 +103,13 @@ typedef GLEEPFNGLGETACTIVEUNIFORMPROC PFNGLGETACTIVEUNIFORMPROC;
 #endif
 
 #if defined(__APPLE__) && defined(__MACH__)
-#include <OpenGL/gl.h>
-#include <OpenGL/glext.h>
-#include <OpenGL/glu.h>
+#include <OpenGL/gl3.h>
+//#include <OpenGL/glext.h>
+//#include <OpenGL/glu.h>
 #else
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include <GL/glext.h>
+#include <GL/gl3.h>
+//#include <GL/glu.h>
+//#include <GL/glext.h>
 
 #if defined(_WINDOWS) && !defined(_MINGW)
 #include <GL/wglext.h>

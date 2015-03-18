@@ -195,22 +195,25 @@ void OpenGLRenderer::setDepthFunction(int depthFunction) {
 
 void OpenGLRenderer::enableAlphaTest(bool val) {
 	Logger::log("Alpha test no longer makes sense, implement it in shaders.\n");
-	return;
+	/*
 	if(val) {
 		glAlphaFunc ( GL_GREATER, alphaTestValue) ;
 		glEnable ( GL_ALPHA_TEST ) ;		
 	} else {
 		glDisable( GL_ALPHA_TEST ) ;
 	}
+	*/
 }
 
 void OpenGLRenderer::setPointSmooth(bool val) {
 	Logger::log("Point Smooth has been deprecated.\n");
-	return;
+	
+	/*
 	if(val)
 		glEnable( GL_POINT_SMOOTH );
 	else
 		glDisable( GL_POINT_SMOOTH );
+	*/
 
 }
 
@@ -287,7 +290,8 @@ Vector3 OpenGLRenderer::Unproject(Number x, Number y, const Matrix4 &cameraMatri
 	wy = ( Number ) vp[3] - ( Number ) y;
 	glReadPixels( x * backingResolutionScaleX, wy * backingResolutionScaleY, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &wz );
 	
-	gluUnProject( wx, wy, wz, mv, _sceneProjectionMatrix, vp, &cx, &cy, &cz );
+	// NABIL: Replace this!
+	//gluUnProject( wx, wy, wz, mv, _sceneProjectionMatrix, vp, &cx, &cy, &cz );
 	
 	coords = Vector3( cx, cy, cz );
 	
@@ -315,7 +319,8 @@ Vector2 OpenGLRenderer::Project(const Matrix4 &cameraMatrix, const Matrix4 &proj
 
 	GLdouble coords[3];
 	
-	gluProject(coordiante.x, coordiante.y, coordiante.z, mv, _sceneProjectionMatrix, vp, &coords[0], &coords[1], &coords[2]);
+	// NABIL: Reimplement this!
+	//gluProject(coordiante.x, coordiante.y, coordiante.z, mv, _sceneProjectionMatrix, vp, &coords[0], &coords[1], &coords[2]);
 	
     return Vector2(coords[0] / backingResolutionScaleX, (viewport.h-coords[1]) / backingResolutionScaleY);
 }
@@ -346,8 +351,9 @@ Vector3 OpenGLRenderer::projectRayFrom2DCoordinate(Number x, Number y, const Mat
 		_sceneProjectionMatrix[i] = projectionMatrix.ml[i];
 	}
 
-	gluUnProject(x, (yRes*backingResolutionScaleY) - y, 0.0, mv, _sceneProjectionMatrix, vp, &nearPlane[0], &nearPlane[1], &nearPlane[2]);
-	gluUnProject(x, (yRes*backingResolutionScaleY) - y, 1.0, mv, _sceneProjectionMatrix, vp, &farPlane[0], &farPlane[1], &farPlane[2]);
+	// NABIL: Fix this!
+	//gluUnProject(x, (yRes*backingResolutionScaleY) - y, 0.0, mv, _sceneProjectionMatrix, vp, &nearPlane[0], &nearPlane[1], &nearPlane[2]);
+	//gluUnProject(x, (yRes*backingResolutionScaleY) - y, 1.0, mv, _sceneProjectionMatrix, vp, &farPlane[0], &farPlane[1], &farPlane[2]);
 
 	Vector3 nearVec(nearPlane[0], nearPlane[1], nearPlane[2]);
 	Vector3 farVec(farPlane[0], farPlane[1], farPlane[2]);
@@ -371,7 +377,7 @@ void OpenGLRenderer::enableDepthTest(bool val) {
 	else
 		glDisable(GL_DEPTH_TEST);	
 }
-
+/*
 inline void loadMatrixNumber(const GLfloat* m) {
 	glLoadMatrixf(m);
 }
@@ -387,6 +393,7 @@ inline void multMatrixNumber(const GLfloat* m) {
 inline void multMatrixNumber(const GLdouble* m) {
 	glMultMatrixd(m);
 }
+*/
 
 void OpenGLRenderer::setModelviewMatrix(Matrix4 m) {
 	m_stacks.SetState(MT_MODEL);
@@ -422,8 +429,9 @@ void OpenGLRenderer::createVertexBufferForMesh(Mesh *mesh) {
 
 void OpenGLRenderer::drawVertexBuffer(VertexBuffer *buffer, bool enableColorBuffer) {
 	OpenGLVertexBuffer *glVertexBuffer = (OpenGLVertexBuffer*)buffer;
-
-	glEnableClientState(GL_VERTEX_ARRAY);		
+	// NABIL: Do something with this!
+	/*
+	glEnableClientState(GL_VERTEX_ARRAY);
     glBindBufferARB( GL_ARRAY_BUFFER_ARB, glVertexBuffer->getVertexBufferID());
 	glVertexPointer( 3, GL_FLOAT, 0, (char *) NULL );
 
@@ -507,6 +515,7 @@ void OpenGLRenderer::drawVertexBuffer(VertexBuffer *buffer, bool enableColorBuff
 	glDisableClientState( GL_TEXTURE_COORD_ARRAY );		
 	glDisableClientState( GL_NORMAL_ARRAY );
 	glDisableClientState( GL_COLOR_ARRAY );
+	*/
 }
 
 void OpenGLRenderer::enableScissor(bool val) {
@@ -525,13 +534,14 @@ void OpenGLRenderer::setScissorBox(Polycode::Rectangle box) {
 
 void OpenGLRenderer::enableFog(bool enable) {
 	Logger::log("Fog is deprecated.\n");
-	return;
+	/*
 	if(enable)
 		glEnable(GL_FOG);
 	else {
 		glDisable(GL_FOG);
 		glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
 	}
+	*/
 }
 
 void OpenGLRenderer::setBlendingMode(int blendingMode) {
@@ -619,7 +629,8 @@ Image *OpenGLRenderer::renderScreenToImage() {
 
 void OpenGLRenderer::setFogProperties(int fogMode, Color color, Number density, Number startDepth, Number endDepth) {
 	Logger::log("Fog is deprecated.\n");
-	return;
+	
+	/*
 	switch(fogMode) {
 		case FOG_LINEAR:
 			glFogi(GL_FOG_MODE, GL_LINEAR);
@@ -641,6 +652,7 @@ void OpenGLRenderer::setFogProperties(int fogMode, Color color, Number density, 
 	glHint(GL_FOG_HINT, GL_DONT_CARE);
 	glFogf(GL_FOG_START, startDepth);
 	glFogf(GL_FOG_END, endDepth);
+	*/
 }
 
 void OpenGLRenderer::setProjectionOrtho(Number xSize, Number ySize, Number _near, Number _far, bool centered) {
@@ -926,8 +938,10 @@ void OpenGLRenderer::CheckAndOutputError(){
 }
 
 void OpenGLRenderer::setTexture(Texture *texture) {
+	// NABIL
 	Logger::log("Textures need to be re implemented to match new renderer.\n");
-	return;
+	
+	/*
 	if(texture == NULL) {
 		glActiveTexture(GL_TEXTURE0);		
 		glDisable(GL_TEXTURE_2D);
@@ -943,6 +957,7 @@ void OpenGLRenderer::setTexture(Texture *texture) {
     }
 	
 	currentTexture = texture;
+	*/
 }
 
 void OpenGLRenderer::pushMatrix() {
@@ -1126,9 +1141,12 @@ void OpenGLRenderer::rotate2D(Number angle) {
 }
 
 void OpenGLRenderer::setVertexColor(Number r, Number g, Number b, Number a) {
+	// NABIL
 	Logger::log("Vertex color has not been updated, currently unavailable.\n");
-	return;
+	
+	/*
 	glColor4f(r,g,b,a);
+	*/
 }
 
 void OpenGLRenderer::EndRender() {

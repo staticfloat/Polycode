@@ -58,12 +58,12 @@
 	#include <GL/gl.h>
 #elif defined(__APPLE__) || defined(__APPLE_CC__)
     #define GL_GLEXT_LEGACY
-	#include <OpenGL/gl.h>
+	#include <OpenGL/gl3.h>
 #else // GLX
 	#define __glext_h_  /* prevent glext.h from being included  */
 	#define __glxext_h_ /* prevent glxext.h from being included */
 	#define GLX_GLXEXT_PROTOTYPES
-	#include <GL/gl.h>
+	#include <GL/gl3.h>
 	#include <GL/glx.h>
 #endif
 

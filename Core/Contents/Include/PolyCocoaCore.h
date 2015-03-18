@@ -28,7 +28,7 @@
 #include "PolyString.h"
 #include "PolyRectangle.h"
 #include <vector>
-#include <OpenGL/gl.h>
+#include <OpenGL/gl3.h>
 #include <OpenGL/OpenGL.h>
 #include "PolyGLRenderer.h"
 #include <mach/mach_time.h>

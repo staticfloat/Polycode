@@ -3,10 +3,14 @@
 
 namespace Polycode{
 	
+#if defined(_WINDOWS) && !defined(_MINGW)
 	PFNGLUNIFORMMATRIX4FVPROC glUniformMatrix4fv;
+#endif
 
 	void GLMatrixStacks::InitOSSpecific() {
+#if defined(_WINDOWS) && !defined(_MINGW)
 		glUniformMatrix4fv = (PFNGLUNIFORMMATRIX4FVPROC)wglGetProcAddress("glUniformMatrix4fv");
+#endif
 	}
 
 	void PushMatrixToGPU (Matrix4& m, int location) {
@@ -30,16 +34,15 @@ namespace Polycode{
 
 	}
 
-	GLMatrixStacks::GLMatrixStacks()
-		: m_viewProjection("ViewProj"), m_model(10), m_view(2), m_projection(1)
-	{}
+	GLMatrixStacks::GLMatrixStacks() :	m_viewProjection("ViewProj"), m_model(10), m_view(2), m_projection(1) {
 
-	void GLMatrixStacks::Initialize()
-	{
+	}
+
+	void GLMatrixStacks::Initialize() {
 		m_viewProjection.Initialize(sizeof(float)* 4 * 4 * 2); // in reverse, two four by four matrices of floats
 	}
 
-	MatrixStack& GLMatrixStacks::GetMatrixStack(){
+	MatrixStack& GLMatrixStacks::GetMatrixStack() {
 		switch (m_currentState) {
 		case MT_MODEL:
 			return m_model;
@@ -50,13 +53,12 @@ namespace Polycode{
 		}
 	}
 
-	void GLMatrixStacks::SetState(MATRIXTYPE to){
+	void GLMatrixStacks::SetState(MATRIXTYPE to) {
 		m_currentState = to;
 	}
 
 	// Model and mvp will be specific to shaders, projection and view should be at a global level
 	void GLMatrixStacks::PushToShader(int modelLocation, int mvpLocation) {
-
 		bool projViewDirty = m_projection.IsDirty() || m_view.IsDirty();
 
 		if (projViewDirty)
